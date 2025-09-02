@@ -11,3 +11,6 @@ For WebSocketServer framework docs
 
 For mostly websocket client stuff
 - https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications
+
+Fantastic guide on express and authentication
+- https://www.youtube.com/watch?v=favjC6EKFgw&list=PL0Zuz27SZ-6P4vnjQ_PJ5iRYsqJkQhtUu&index=6
