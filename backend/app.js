@@ -6,6 +6,7 @@ const webSocket = require('ws')
 const connectDB = require('./config/db.js')
 const cookieParser = require('cookie-parser')
 const credentials = require('./middleware/credentials.js')
+const { initWebSocket } = require('./sockets/index.js')
 
 // Create the express app and web socket server
 const app = express()
@@ -15,9 +16,9 @@ app.use(express.json());
 const server = require('http').createServer(app)
 
 // Create a web socket server for Vue clients to hook in to
-const wss = new webSocket.WebSocketServer({ server });
+initWebSocket(server);
 
-// Instantiate the database
+// Instantiate the database middleware
 connectDB();
 
 // add credentials to all headers when CORS are valid
@@ -25,45 +26,17 @@ connectDB();
 app.use(credentials)
 
 // Setup cors
-app.use(cors());
+app.use(cors({
+	origin: "http://localhost:5173",
+	credentials: true
+}));
 
 // middleware for cookies
 app.use(cookieParser());
 
-
-
 // Begin route definitions
 app.use('/api/auth', require('./routes/api/auth.js'))
-
-var MSG_ID = 0;
-
-function handleMessage(msg) {
-	const message_packet = {
-		type: "message",
-		id: MSG_ID,
-		user: msg.user,
-		contents: msg.contents
-	}
-
-	wss.clients.forEach((client) => {
-		if (client.readyState === WebSocket.OPEN) {
-			client.send(JSON.stringify(message_packet));
-		}
-	})
-}
-
-wss.on('connection', function connection(ws) {
-	ws.on('error', console.error);
-
-	ws.onmessage = (event) => {
-		const msg = JSON.parse(event.data)
-
-		switch (msg.type) {
-			case "message": handleMessage(msg)
-		}
-	}
-})
-
+app.use('/debug', require('./routes/debug/authentication.js'))
 
 // ERROR HANDLING MIDDLEWARE
 // ENSURE IT IS AT END OF ALL ROUTES

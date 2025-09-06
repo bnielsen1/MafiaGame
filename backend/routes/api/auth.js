@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const path = require('path');
 const userController = require('../../controllers/userController')
 const refreshTokenController = require('../../controllers/refreshTokenController')
 const verifyJWT = require('../../middleware/verifyJWT')

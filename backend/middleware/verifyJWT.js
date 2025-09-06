@@ -12,7 +12,7 @@ const verifyJWT = (req, res, next) => {
         config.ACCESS_TOKEN_SECRET,
         (err, decoded) => {
             if (err) return res.status(403).json({ message: 'received some sort of invalid token data' })
-            req.email = decoded.email; // pass email to request so future middleware can use it
+            req.username = decoded.username; // pass username to request so future middleware can use it
             next();
         }
     )
