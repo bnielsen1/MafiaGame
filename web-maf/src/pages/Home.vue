@@ -1,5 +1,53 @@
 <script>
+import { mapState } from 'vuex'
+import authFetch from '@/utils/api'
 
+export default {
+  data() {
+    return {
+      email: "",
+      password: "",
+    }
+  },
+  created() {
+    this.updateLoginStatus()
+  },
+  computed: {
+		...mapState({
+			isLoggedIn(state) {
+			  return !!state.accessToken // return true if we have a token a non-null token
+			}
+		})
+	},
+  methods: {
+    async updateLoginStatus() {
+      try {
+        authFetch('http://localhost:3000/debug/me')
+      } catch (err) {
+        console.error("Error when updating login status: ", err);
+      }
+    },
+    async submitLogin() {
+      const loginData = {
+        email: this.email,
+        password: this.password
+      }
+
+      try {
+				await this.$store.dispatch("login", loginData)
+			} catch (err) {
+				console.error("Login failed", err)
+			}
+    },
+    async submitLogout() {
+      try {
+				await this.$store.dispatch("logout")
+			} catch (err) {
+				console.error("Logout failed", err)
+			}
+    }
+  }
+}
 </script>
 
 <template>
@@ -11,15 +59,17 @@
       Login
       <div>
         Sign-in information
-        <input />
-        <input />
-        <button>Submit</button>
+        <input v-model="email" placeholder="email"/>
+        <input v-model="password" placeholder="password"/>
+        <button @click="submitLogin">Submit</button>
       </div>
       <div>
-        Login Status: X
+        Login Status
+        <p v-if="isLoggedIn">logged in!</p>
+        <p v-else>logged out :O</p>
       </div>
       <div>
-        <button>Logout</button>
+        <button @click="submitLogout">Logout</button>
       </div>
     </div>
   </div>

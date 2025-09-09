@@ -1,33 +1,42 @@
 const webSocket = require('ws')
+const socketHandlers = require('./handlers');
+const { lobbyManager, clientMap, getUserInfo } = require('./gamestate')
 
-export function initWebSocket(server) {
+const initWebSocket = (server) => {
     const wss = new webSocket.WebSocketServer({ server });
-    var MSG_ID = 0;
 
-    function handleMessage(msg) {
-        const message_packet = {
-            type: "message",
-            id: MSG_ID,
-            user: msg.user,
-            contents: msg.contents
-        }
+    wss.on('connection', function connection(ws, req) {
+        const ip = req.socket.remoteAddress
+        console.log(`a client connected: ${ip}`)
 
-        wss.clients.forEach((client) => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify(message_packet));
-            }
-        })
-    }
-
-    wss.on('connection', function connection(ws) {
         ws.on('error', console.error);
 
         ws.onmessage = (event) => {
-            const msg = JSON.parse(event.data)
+            const data = JSON.parse(event.data)
+            console.log(`RECEIVED ${data.type} PACKET FROM CLIENT: ${ip}`)
+            
+            switch (data.type) {
+                case "handshake": 
+                    socketHandlers.handleHandshake(ws, data);
+                    break;
+                case "sendMessage": 
+                    socketHandlers.handleSendMessage(ws, data)
+                    break;
+            }
+        }
 
-            switch (msg.type) {
-                case "message": handleMessage(msg)
+        ws.onclose = () => {
+            // Remove the client entirely from the database
+            try {
+                let { username, lobby } = getUserInfo(ws);
+                console.log(`User: ${username} disconnected. Removing them from their lobby!`)
+                lobby.clients.delete(ws)
+                clientMap.delete(ws)
+            } catch (err) { // ws wasn't found
+                console.log("Disconnected unauthenticated user!")
             }
         }
     })
 }
+
+module.exports = initWebSocket;

@@ -6,7 +6,7 @@ const webSocket = require('ws')
 const connectDB = require('./config/db.js')
 const cookieParser = require('cookie-parser')
 const credentials = require('./middleware/credentials.js')
-const { initWebSocket } = require('./sockets/index.js')
+const initWebSocket = require('./sockets/index.js')
 
 // Create the express app and web socket server
 const app = express()

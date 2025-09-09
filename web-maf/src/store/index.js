@@ -9,6 +9,7 @@ const store = createStore({
     },
     mutations: {
         setAccessToken(state, jwt) {
+            // console.log(`Setting our access token to value: ${jwt}`)
             state.accessToken = jwt;
         },
         clearAccessToken(state) {
@@ -27,6 +28,7 @@ const store = createStore({
           if (res.ok) {
             const data = await res.json()
             commit("setAccessToken", data.accessToken)
+            console.log("Successfully logged in!")
           } else {
             throw new Error("Failed to login")
           }
@@ -38,6 +40,9 @@ const store = createStore({
               method: "GET",
               credentials: "include"
             })
+            if (res.ok) {
+              console.log("Successfully logged out!")
+            }
         },
         async refresh({ commit, dispatch }) {
           const res = await fetch("http://localhost:3000/api/auth/refresh", {
@@ -45,6 +50,7 @@ const store = createStore({
             credentials: "include"
           });
           if (res.ok) {
+            // console.log("Successful refresh!")
             const data = await res.json()
             commit("setAccessToken", data.accessToken);
           } else {

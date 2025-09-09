@@ -14,3 +14,4 @@ For mostly websocket client stuff
 
 Fantastic guide on express and authentication
 - https://www.youtube.com/watch?v=favjC6EKFgw&list=PL0Zuz27SZ-6P4vnjQ_PJ5iRYsqJkQhtUu&index=6
+  ^^^ This is what all my authentication is based around. If confused, rewatch the playlist
