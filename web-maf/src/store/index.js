@@ -4,13 +4,23 @@ import { createStore } from 'vuex'
 const store = createStore({
     state() {
         return {
-            accessToken: null // Use null accessToken as a (logged out) state check for now
+            accessToken: null, // Use null accessToken as a (logged out) state check for now
+            username: null,
+            email: null,
         }
     },
     mutations: {
         setAccessToken(state, jwt) {
             // console.log(`Setting our access token to value: ${jwt}`)
             state.accessToken = jwt;
+        },
+        setUserInfo(state, { username, email }) {
+          state.username = username;
+          state.email = email;
+        },
+        clearUserInfo(state) {
+          state.username = null;
+          state.email = null;
         },
         clearAccessToken(state) {
             state.accessToken = null;
@@ -27,15 +37,21 @@ const store = createStore({
           })
           if (res.ok) {
             const data = await res.json()
+            const userInfo = {
+              username: data.username,
+              email: data.email
+            }
             commit("setAccessToken", data.accessToken)
+            console.log(`Should be setting email to ${data.email}`)
+            commit("setUserInfo", userInfo)
+            console.log(`Email set to ${this.state.email}`)
             console.log("Successfully logged in!")
-          } else {
-            throw new Error("Failed to login")
           }
-          
+          return res;
         },
         async logout({ commit }) {
-            commit("clearAccessToken")
+            commit("clearAccessToken");
+            commit("clearUserInfo");
             const res = await fetch("http://localhost:3000/api/auth/logout", {
               method: "GET",
               credentials: "include"
@@ -52,9 +68,16 @@ const store = createStore({
           if (res.ok) {
             // console.log("Successful refresh!")
             const data = await res.json()
+            const userInfo = {
+              username: data.username,
+              email: data.email
+            }
             commit("setAccessToken", data.accessToken);
+            commit("setUserInfo", userInfo)
           } else {
-            dispatch("logout")
+            if (this.state.accessToken) {
+              dispatch("logout")
+            } // Otherwise we don't really need to logout cause we aren't logged in!
             throw new Error("Refresh failed")
           }
         }

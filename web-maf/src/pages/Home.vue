@@ -5,46 +5,44 @@ import authFetch from '@/utils/api'
 export default {
   data() {
     return {
-      email: "",
-      password: "",
+      lobbies: [],
+      lobbyTitle: ""
     }
   },
   created() {
-    this.updateLoginStatus()
+    this.updateLobbyList()
   },
-  computed: {
-		...mapState({
-			isLoggedIn(state) {
-			  return !!state.accessToken // return true if we have a token a non-null token
-			}
-		})
-	},
   methods: {
-    async updateLoginStatus() {
+    async updateLobbyList() {
       try {
-        authFetch('http://localhost:3000/debug/me')
+        const res = await authFetch('http://localhost:3000/api/lobby')
+        if (res.ok) {
+          const data = await res.json();
+          this.lobbies = data.lobbies;
+        } else {
+          console.log("Can't grab lobby data. Probably not authenticated")
+        }
       } catch (err) {
-        console.error("Error when updating login status: ", err);
+        console.log("Shouldn't reach this error!")
       }
     },
-    async submitLogin() {
-      const loginData = {
-        email: this.email,
-        password: this.password
+    async createLobby() {
+      try {
+        const lobbyInfo = { title: this.lobbyTitle };
+        const res = await authFetch('http://localhost:3000/api/lobby', {
+          method: 'POST',
+          body: JSON.stringify(lobbyInfo),
+          headers: { "Content-Type": "application/json" },
+        });
+        if (res.ok) {
+          const data = await res.json()
+          this.$router.push(`/lobby/${data.lobbyId}`)
+        } else {
+          console.log("THIS SHOULDN'T HAPPEN!");
+        }
+      } catch (err) {
+        console.error(err)
       }
-
-      try {
-				await this.$store.dispatch("login", loginData)
-			} catch (err) {
-				console.error("Login failed", err)
-			}
-    },
-    async submitLogout() {
-      try {
-				await this.$store.dispatch("logout")
-			} catch (err) {
-				console.error("Logout failed", err)
-			}
     }
   }
 }
@@ -54,23 +52,20 @@ export default {
   <div class="center-box">
     <div class="lobby-box">
       Lobbies
+      <li v-for="lobby in lobbies">
+        <div>
+          Owner: {{ lobby.owner }}
+          Title: {{ lobby.title }}
+          <button @click="$router.push(`/lobby/${lobby.lobbyId}`)">Join</button>
+        </div>
+        
+      </li>
     </div>
-    <div class="login-box">
-      Login
-      <div>
-        Sign-in information
-        <input v-model="email" placeholder="email"/>
-        <input v-model="password" placeholder="password"/>
-        <button @click="submitLogin">Submit</button>
-      </div>
-      <div>
-        Login Status
-        <p v-if="isLoggedIn">logged in!</p>
-        <p v-else>logged out :O</p>
-      </div>
-      <div>
-        <button @click="submitLogout">Logout</button>
-      </div>
+    <div class="create-box">
+      <form @submit.prevent="createLobby">
+        <input v-model="lobbyTitle" placeholder="Lobby title">
+        <button type="submit">Create lobby!</button>
+      </form>
     </div>
   </div>
 </template>
@@ -84,13 +79,6 @@ export default {
 }
 
 .lobby-box {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-}
-
-.login-box {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;

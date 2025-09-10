@@ -7,6 +7,7 @@ const connectDB = require('./config/db.js')
 const cookieParser = require('cookie-parser')
 const credentials = require('./middleware/credentials.js')
 const initWebSocket = require('./sockets/index.js')
+const requestLogger = require('./middleware/requestLogger.js')
 
 // Create the express app and web socket server
 const app = express()
@@ -31,11 +32,15 @@ app.use(cors({
 	credentials: true
 }));
 
+// API CALL LOGGER
+app.use(requestLogger);
+
 // middleware for cookies
 app.use(cookieParser());
 
 // Begin route definitions
 app.use('/api/auth', require('./routes/api/auth.js'))
+app.use('/api/lobby', require('./routes/api/lobby.js'))
 app.use('/debug', require('./routes/debug/authentication.js'))
 
 // ERROR HANDLING MIDDLEWARE

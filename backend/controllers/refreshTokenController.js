@@ -13,7 +13,7 @@ exports.handleRefreshToken = async (req, res) => {
         refreshToken: refreshToken
     })
     if (!foundUser) return res.status(403).json({ message: 'Refresh token does match a registered user...' })
-    console.log('cookie token corresponds to: ' + foundUser.username);
+    // console.log('cookie token corresponds to: ' + foundUser.username);
     
     // evaluate jwt
     jwt.verify(
@@ -26,7 +26,11 @@ exports.handleRefreshToken = async (req, res) => {
                     config.ACCESS_TOKEN_SECRET,
                     { expiresIn: '30s' }
                 )
-                res.json({ accessToken })
+                res.json({ 
+                    accessToken,
+                    username: foundUser.username,
+                    email: foundUser.email,
+                })
         }
     )
 }

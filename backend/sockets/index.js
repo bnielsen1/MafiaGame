@@ -1,6 +1,6 @@
 const webSocket = require('ws')
 const socketHandlers = require('./handlers');
-const { lobbyManager, clientMap, getUserInfo } = require('./gamestate')
+const lobbyState = require('./lobbyState')
 
 const initWebSocket = (server) => {
     const wss = new webSocket.WebSocketServer({ server });
@@ -28,12 +28,11 @@ const initWebSocket = (server) => {
         ws.onclose = () => {
             // Remove the client entirely from the database
             try {
-                let { username, lobby } = getUserInfo(ws);
+                const username = lobbyState.getUser(ws)
                 console.log(`User: ${username} disconnected. Removing them from their lobby!`)
-                lobby.clients.delete(ws)
-                clientMap.delete(ws)
+                lobbyState.handleUserLeave(ws)
             } catch (err) { // ws wasn't found
-                console.log("Disconnected unauthenticated user!")
+                console.error("Disconnected incomplete user!", err)
             }
         }
     })

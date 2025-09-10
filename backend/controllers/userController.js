@@ -76,6 +76,8 @@ exports.handleLogin = async (req, res) => {
         res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 }) // lives 1d
         res.json({ 
             message: `User ${foundUser.username} | ${foundUser.email} is now logged in!`,
+            username: foundUser.username,
+            email: foundUser.email,
             accessToken
         });
     } else {

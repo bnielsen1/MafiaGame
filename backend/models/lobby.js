@@ -93,21 +93,35 @@
 //     Phase,
 // }
 
-class LobbyManager {
-  constructor() {
-    this.lobbies = new Map();
-    this.idTracker = 0;
-  }
-}
+const LobbyStatus = Object.freeze({
+    PREGAME: 'pregame',
+    INGAME: 'ingame',
+    POSTGAME: 'postgame'
+});
 
 class Lobby {
-  constructor() {
+  constructor(owner, title, lobbyId) {
+    this.owner = owner;
+    this.title = title;
+    this.status = LobbyStatus.PREGAME;
+    this.lobbyId = lobbyId;
     this.clients = new Set();
     this.chat = [];
+  }
+  getSockets() {
+    return this.clients // array form of client list
+  }
+  messageSent(username, message) {
+    this.chat.push({
+      username,
+      message
+    })
+  }
+  getHistory() {
+    return this.chat;
   }
 }
 
 module.exports = {
-  LobbyManager,
   Lobby
 }

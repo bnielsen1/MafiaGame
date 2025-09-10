@@ -26,18 +26,18 @@ export default {
 	},
 	methods: {
 		async initLobby() {
+			// Get old data
+			const res = authFetch()
+			// Instantiate socket
 			try {
-				await authFetch('http://localhost:3000/debug/me')
-
 				// console.log("Starting connection to web socket server")
 				this.connection = new WebSocket("ws://localhost:3000")
 				
 				this.connection.onopen = (event) => {
-					// console.log(`Attempting to send accessToken: ${this.getAccessToken}`)
 					const handshakePacket = {
 						type: "handshake",
 						accessToken: this.getAccessToken,
-						lobbyId: 0,
+						lobbyId: this.$route.params.id,
 					}
 
 					this.connection.send(JSON.stringify(handshakePacket));
@@ -46,20 +46,13 @@ export default {
 				this.connection.onmessage = (event) => {
 					const data = JSON.parse(event.data)
 
-					// const packetHandler = {
-					// 	newMessage: (data) => this.handleNewMessage(data),
-					// 	default: (data) => this.handleDefault(data)
-					// }
-
-					// (packetHandler[data.type] || packetHandler.default)(data);
-
 					switch (data.type) {
 						case "newMessage": {
 							this.handleNewMessage(data)
 							break
 						}
 						case "handshakeSuccess": {
-							console.log("Websocket authenticated")
+							this.messages = data.messages
 							break;
 						}
 						default: {
@@ -110,7 +103,13 @@ export default {
 				console.error("Login failed", err)
 			}
 		}
-	}
+	},
+	beforeUnmount() {
+		if (this.connection) {
+			this.connection.close()
+			this.connection = null
+		}
+	},
 }
 
 </script>

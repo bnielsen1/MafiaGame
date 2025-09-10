@@ -1,27 +1,12 @@
-const { LobbyManager, Setting, Lobby, GameState, Player, Chat, Phase, LobbyStatus, GameTime, StartTime } = require('../models/lobby');
-const { lobbyManager, clientMap, getUserInfo } = require('./gamestate')
+const lobbyState = require('./lobbyState')
 const jwt = require('jsonwebtoken');
 const config = require('../config')
 
-// Helper functions
-isUserConnected = (username) => {
-    if (clientMap.size === 0) {
-      return null;
-    }
-    for (const value of clientMap.values()) {
-        if (value[0] === username) {
-            return value[1];
-        }
-    }
-    
-    return null;
-}
+// Handlers for websockets
 
 // Exported functions
 exports.handleHandshake = (ws, data) => {
     try {
-      // console.log("Beginning to verify JWT")
-      // console.log(`Received access token: ${data.accessToken}`)
       jwt.verify(data.accessToken, config.ACCESS_TOKEN_SECRET, (err, decoded) => {
         if (err) {
           ws.send(JSON.stringify({ type: 'handshakeError', message: 'Authentication failed.' }));
@@ -34,22 +19,18 @@ exports.handleHandshake = (ws, data) => {
         const { username } = decoded;
         console.log(`grabbed username from jwt: ${username}`)
 
-        if (isUserConnected(username) !== null) {
+        if (lobbyState.getSocket(username) !== null) { // if the found username already has a socket instance
             ws.send(JSON.stringify({ type: 'handshakeError', message: 'You are already connected.' }));
             console.log(`connected user: ${username} tried to connect again! Denying...`)
             ws.close();
             return;
         }
-
         
         // Insert the user into the lobby!
-        clientMap.set(ws, [username, data.lobbyId])
-        // console.log("Inserted user into client map")
-        lobbyManager.lobbies.get(data.lobbyId).clients.add(ws);
-        // console.log("Inserted user into lobby")
+        lobbyState.handleUserJoin(ws, username, data.lobbyId)
 
         console.log("User successfully authenticated. Websocket connection instantiated")
-        ws.send(JSON.stringify({ type: 'handshakeSuccess', message: 'Successfully logged in!'}))
+        ws.send(JSON.stringify({ type: 'handshakeSuccess', messages: lobbyState.getLobby(username).chat}))
       })
     } catch (err) {
       ws.send(JSON.stringify({ type: 'handshakeError', message: 'Some error occured when handshaking' }));
@@ -60,27 +41,26 @@ exports.handleHandshake = (ws, data) => {
 }
 
 exports.handleSendMessage = (ws, data) => {
-    console.log("handle send message was called")
     try {
       // Get required references to gamestate and user
-      const { username, lobby } = getUserInfo(ws);
+      const username = lobbyState.getUser(ws);
+      const lobby = lobbyState.getLobby(username);
 
       // Create a message to send to all clients
-      const messageData = {
+      const messagePacket = {
+        type: "newMessage",
         username: username,
-        message: data.message
+        message: data.message,
       }
 
       // Save the message to memory
-      lobby.chat.push(messageData)
+      lobby.messageSent(username, data.message)
 
       // Send message to all clients connected to the lobby
-      lobby.clients.forEach((client) => {
+      console.log(`User ${username} sent sent message: ${data.message} on lobby: ${lobbyState.getLobbyId(username)}`)
+      lobby.getSockets().forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
-          const newMessagePacket = { ...messageData, type: "newMessage" }
-          console.log("Sending packet with contents")
-          console.log(newMessagePacket)
-          client.send(JSON.stringify(newMessagePacket));
+          client.send(JSON.stringify(messagePacket));
         }
       })
     } catch (err) {
