@@ -18,6 +18,8 @@ export default {
         const res = await authFetch('http://localhost:3000/api/lobby')
         if (res.ok) {
           const data = await res.json();
+          console.log("logging data from lobby list fetch")
+          console.log(data)
           this.lobbies = data.lobbies;
         } else {
           console.log("Can't grab lobby data. Probably not authenticated")

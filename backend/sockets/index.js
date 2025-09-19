@@ -1,6 +1,7 @@
 const webSocket = require('ws')
-const socketHandlers = require('./handlers');
-const lobbyState = require('./lobbyState')
+const socketHandlers = require('./handlers/receiveHandlers');
+const lobbyState = require('../states/lobbyState')
+const modelMapper = require('../states/mappers/modelMapper')
 
 const initWebSocket = (server) => {
     const wss = new webSocket.WebSocketServer({ server });
@@ -22,13 +23,19 @@ const initWebSocket = (server) => {
                 case "sendMessage": 
                     socketHandlers.handleSendMessage(ws, data)
                     break;
+                case "startGame":
+                    socketHandlers.handleStartGame(ws)
+                    break;
+                case "actionUpdate":
+                    socketHandlers.handleActionUpdate(ws, data)
+                    break;
             }
         }
 
         ws.onclose = () => {
             // Remove the client entirely from the database
             try {
-                const username = lobbyState.getUser(ws)
+                const username = modelMapper.getUser(ws)
                 console.log(`User: ${username} disconnected. Removing them from their lobby!`)
                 lobbyState.handleUserLeave(ws)
             } catch (err) { // ws wasn't found

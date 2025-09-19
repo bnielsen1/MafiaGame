@@ -1,9 +1,10 @@
 
 const { LobbyManager, Lobby } = require('../models/lobby')
-const lobbyState = require('../sockets/lobbyState')
+const lobbyState = require('../states/lobbyState')
+const modelMapper = require('../states/mappers/modelMapper')
 
 exports.getLobbies = (req, res) => {
-    const lobbies = Array.from(lobbyState.lobbies.values()) // Returns lobby objects
+    const lobbies = Array.from(modelMapper.getLobbies()) // Returns lobby objects
     let lobbyResponse = []
     lobbies.forEach((lobby) => {
         lobbyResponse.push({
