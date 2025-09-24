@@ -1,6 +1,11 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import { createRouter, createWebHistory } from 'vue-router'
+
+import PrimeVue from 'primevue/config'
+import { definePreset } from '@primeuix/themes';
+import Aura from '@primeuix/themes/aura'
+
 import authFetch from './utils/api'
 import store from './store'
 import Home from './pages/Home.vue'
@@ -8,6 +13,7 @@ import Lobby from './pages/Lobby.vue'
 import DebugPage from './pages/DebugPage.vue'
 import Login from './pages/Login.vue'
 import Account from './pages/Account.vue'
+import LobbyCopy from './pages/LobbyCopy.vue'
 
 // Do refresh token check
 try {
@@ -29,7 +35,13 @@ const router = createRouter({
     { 
       path: '/lobby/:id',
       name: 'lobby', 
-      component: Lobby,
+      component: LobbyCopy,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/lobbytest',
+      name: 'lobbytest',
+      component: LobbyCopy,
       meta: { requiresAuth: true }
     },
     {
@@ -65,7 +77,32 @@ router.beforeEach((to, from, next) => {
   }
 })
 
+import './assets/main.css';
+
+const vuePreset = definePreset(Aura, {
+  semantic: {
+    primary: {
+      50: '{indigo.50}',
+      100: '{indigo.100}',
+      200: '{indigo.200}',
+      300: '{indigo.300}',
+      400: '{indigo.400}',
+      500: '{indigo.500}',
+      600: '{indigo.600}',
+      700: '{indigo.700}',
+      800: '{indigo.800}',
+      900: '{indigo.900}',
+      950: '{indigo.950}'
+    }
+  }
+})
+
 createApp(App)
   .use(store)
   .use(router)
+  // .use(PrimeVue, {
+  //   theme: {
+  //     preset: Aura,
+  //   }
+  // })
   .mount('#app')

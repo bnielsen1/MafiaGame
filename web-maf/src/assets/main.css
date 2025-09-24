@@ -1,0 +1,35 @@
+/* src/assets/css/main.css */
+
+/* --- CSS Reset and Base Styles --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
+}
+
+
+:root {
+  --primary: #a93ad5;
+  --secondary: #8e33b2;
+
+  --background-1: #2c2a31;
+  --background-2: #211f24;
+  --background-3: #222025;
+  --background-4: #38363c;
+  --background-5: #1e1c21;
+
+  --text-primary: white;
+  --text-secondary: #807e84;
+}
+
+html, body {
+  font-family: Arial, Arial, Helvetica, sans-serif;
+}
+
+p {
+  padding: 0;
+  margin: 0;
+}

@@ -1,0 +1,208 @@
+
+{
+  "samplePlayers": [
+    {
+      "username": "brian",
+      "alive": true,
+      "role": {
+      "title": null,
+      "actions": [
+        {
+          "title": "vote",
+          "target": "kylie",
+          "targets": [
+            "kylie",
+            "caleb",
+            "landon",
+            "david",
+            "greg"
+          ]
+        }
+      ]
+      } 
+    },
+    {
+      "username": "kylie",
+      "alive": true,
+      "role": {
+      "title": null,
+      "actions": [
+        {
+          "title": "vote",
+          "target": "brian",
+          "targets": [
+            "brian",
+            "caleb",
+            "landon",
+            "david",
+            "greg"
+          ]
+        }
+      ]
+      } 
+    },
+    {
+      "username": "caleb",
+      "alive": true,
+      "role": {
+      "title": null,
+      "actions": [
+        {
+          "title": "vote",
+          "target": "brian",
+          "targets": [
+            "kylie",
+            "brian",
+            "landon",
+            "david",
+            "greg"
+          ]
+        }
+      ]
+      } 
+    },
+    {
+      "username": "landon",
+      "alive": true,
+      "role": {
+      "title": null,
+      "actions": [
+        {
+          "title": "vote",
+          "target": "greg",
+          "targets": [
+            "kylie",
+            "caleb",
+            "brian",
+            "david",
+            "greg"
+          ]
+        }
+      ]
+      } 
+    },
+    {
+      "username": "david",
+      "alive": true,
+      "role": {
+      "title": null,
+      "actions": [
+        {
+          "title": "vote",
+          "target": "caleb",
+          "targets": [
+            "kylie",
+            "brian",
+            "caleb",
+            "landon",
+            "greg"
+          ]
+        }
+      ]
+      } 
+    },
+    {
+      "username": "greg",
+      "alive": true,
+      "role": {
+      "title": null,
+      "actions": [
+        {
+          "title": "vote",
+          "target": "caleb",
+          "targets": [
+            "brian",
+            "caleb",
+            "landon",
+            "david",
+            "kylie"
+          ]
+        }
+      ]
+      } 
+    }
+  ],
+  "samplePhases": [
+    {
+      "number": "1",
+      "dayTime": true,
+      "timer": 10000,
+      "messages": [
+        {
+          "username": "briyoda",
+          "message": "woah this is message 1!"
+        },
+        {
+          "username": "briyoda",
+          "message": "woah this is message 2!"
+        },
+        {
+          "username": "kylie",
+          "message": "woah this is MYYY message 1!"
+        },
+        {
+          "username": "kylie",
+          "message": "woah this is MYYY message 2!"
+        },
+        {
+          "username": "kylie",
+          "message": "woah this is MYYY message 3!"
+        },
+        {
+          "username": "briyoda",
+          "message": "woah this is message 3 haha!"
+        }
+      ]
+    },
+    {
+      "number": "1",
+      "dayTime": false,
+      "timer": 10000,
+      "messages": [
+        {
+          "username": "briyoda",
+          "message": "UNIQUE1 woah this is message 1!"
+        },
+        {
+          "username": "briyoda",
+          "message": "woah this is message 2!"
+        },
+        {
+          "username": "kylie",
+          "message": "woah this is MYYY message 1!"
+        },
+        {
+          "username": "kylie",
+          "message": "AN EXTRA NIGHT MESSAGE"
+        },
+        {
+          "username": "briyoda",
+          "message": "woah this is message 3 haha!"
+        }
+      ]
+    },
+    {
+      "number": "2",
+      "dayTime": true,
+      "timer": 10000,
+      "messages": [
+        {
+          "username": "briyoda",
+          "message": "UNIQUE2 woah this is message 1!"
+        },
+        {
+          "username": "briyoda",
+          "message": "woah this is message 2!"
+        },
+        {
+          "username": "kylie",
+          "message": "woah this is MYYY message 1!"
+        },
+        {
+          "username": "briyoda",
+          "message": "woah this is message 3 haha!"
+        }
+      ]
+    }
+  ]
+}

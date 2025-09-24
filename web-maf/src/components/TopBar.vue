@@ -41,7 +41,7 @@ export default {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  background-color: grey;
+  background-color: var(--primary);
 }
 
 </style>
